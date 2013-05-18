@@ -64,6 +64,7 @@ exports.findAll = function (req, res) {
 
 
 exports.addTrainingPlan = function (req, res) {
+    db.collection("TrainingPlans").insert({_id:'LG', parent:'Electronics',ancestors:ancestorpath});
     var TrainingPlan = req.body;
     console.log('Adding TrainingPlan: ' + JSON.stringify(TrainingPlan));
     db.collection('TrainingPlans', function (err, collection) {

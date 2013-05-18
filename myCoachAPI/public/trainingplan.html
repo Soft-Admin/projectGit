@@ -1,97 +1,694 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="utf-8">
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="keywords" content="jquery,ui,easy,easyui,web">
-    <meta name="description" content="easyui help you build your web page easily!">
+    <title>My Coach - Training Plan</title>
+    <link href="stylesheets/style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
-    <!--link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css"-->
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+    <!--script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script-->
     <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
-
-
-
-    <title>MyCoach Web App</title>
 </head>
-<body>
+<script>
+    window.onload=function() {
 
-<!-- HTML CODE -->
-<div id="container">Training Plans</div>
+        // get tab container
+        var container = document.getElementById("tabContainer");
+        // set current tab
+        var navitem = container.querySelector(".trainingtabs ul li");
+        //store which tab we are on
+        var ident = navitem.id.split("_")[1];
+        navitem.parentNode.setAttribute("data-current",ident);
+        //set current tab with class of activetabheader
+        navitem.setAttribute("class","tabActiveHeader");
 
+        //hide two tab contents we don't need
+        var pages = container.querySelectorAll(".tabpage");
+        for (var i = 1; i < pages.length; i++) {
+            pages[i].style.display="none";
+        }
 
-<!-- Libraries -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+        //this adds click event to tabs
+        var tabs = container.querySelectorAll(".trainingtabs ul li");
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].onclick=displayPage;
+        }
+    }
 
+    // on click of one of tabs
+    function displayPage() {
+        var current = this.parentNode.getAttribute("data-current");
+        //remove class of activetabheader and hide old contents
+        document.getElementById("tabHeader_" + current).removeAttribute("class");
+        document.getElementById("tabpage_" + current).style.display="none";
 
-<!-- Javascript code -->
-<script type="text/javascript">
-
-
+        var ident = this.id.split("_")[1];
+        //add class of activetabheader to new active tab and show contents
+        this.setAttribute("class","tabActiveHeader");
+        document.getElementById("tabpage_" + ident).style.display="block";
+        this.parentNode.setAttribute("data-current",ident);
+    }// JavaScript Document
 
 </script>
+<body>
+<div id="wrapper">
+    <div id="tabContainer">
+        <div class="trainingtabs">
+            <ul>
+                <li id="tabHeader_1">Training Plans</li>
+                <li id="tabHeader_2">Squads</li>
+                <li id="tabHeader_3">Reports</li>
+                <li id="tabHeader_4">Add Member/Group</li>
+            </ul>
+        </div>
+        <div class="tabscontent">
+            <div class="tabpage" id="tabpage_1">
+                <table id="TrainingTable" title="Training Plans" class="cssTpsTable">
+                    <thead>
+                    <tr>
+                        <th hidden="true"  field="_id" enable="false" width="100" class="cssTpsTableField">ID</th>
+                        <th field="TP_Name"  width="150" class="cssTpsTableField">Name</th>
+                        <th field="TP_Description"  width="350" class="cssTpsTableField">Description</th>
+                    </tr>
+                    </thead>
+                </table>
+                <div id="TrainingTool">
+                    <a href="#" id="TrainingCreate" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="create_trainingplanDlgForNew()">Create Plan</a>
+                    <a href="#" id="TrainingEdit" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="create_trainingplanDlgForEdit()">Edit Plan</a>
+                    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delete_trainingplan()">Remove Plan</a>
+                </div>
 
+                <div id="PieceDLG" class="easyui-dialog" style="width:800px;height:550px;padding:10px 20px"
+                     closed="true" buttons="#piece-buttons">
+                <form id="PieceFM" method="post" novalidate>
+                <script type="text/javascript">
 
-<ul>
-    <li>
-        <!-- Example 1 -->
-        <button onclick="JavaScript:removeSampleData()">Remove Sample Data</button>
+                    $(document).ready(function () {
 
+                        $('#id_radio1').click(function () {
+                            $('#div2').hide('fast');
+                            $('#div1').show('fast');
+                            $('#div3').hide('fast');
+                            $('input[name=PT_Time]').val("");
+                            $('input[name=PT_HeartRate]').val("");
+                            $('input[name=PT_StRate]').val("");
+                            $('input[name=PT_Repeat]').val("");
+                            $('input[name=IS_Interval]').val("");
+                            $('input[name=IS_Reset]').val("");
+                            $('input[name=IS_IT_Dis]').prop('checked', false);
+                            $('input[name=IS_IT_Stroke]').prop('checked', false);
+                            $('input[name=IS_IT_Type]').prop('checked', false);
+                            $('input[name=IS_RT_Time]').prop('checked', false);
+                            $('input[name=IS_RT_Dis]').prop('checked', false);
+                            $('input[name=IS_RT_Stroke]').prop('checked', false);
+                        });
+                        $('#id_radio2').click(function () {
+                            $('#div1').hide('fast');
+                            $('#div2').show('fast');
+                            $('#div3').hide('fast');
+                            $('input[name=PD_Distance]').val("");
+                            $('input[name=PD_HeartRate]').val("");
+                            $('input[name=PD_StrokeRate]').val("");
+                            $('input[name=PD_Repeat]').val("");
+                            $('input[name=IS_Interval]').val("");
+                            $('input[name=IS_Reset]').val("");
+                            $('input[name=IS_IT_Dis]').prop('checked', false);
+                            $('input[name=IS_IT_Stroke]').prop('checked', false);
+                            $('input[name=IS_IT_Type]').prop('checked', false);
+                            $('input[name=IS_RT_Time]').prop('checked', false);
+                            $('input[name=IS_RT_Dis]').prop('checked', false);
+                            $('input[name=IS_RT_Stroke]').prop('checked', false);
+                        });
 
-    </li>
-    <li>
-        <!-- Example 1 -->
-        <button onclick="JavaScript:populateDBWithSampleData()">Insert Sample Data</button>
+                        $('#id_radio3').click(function () {
+                            $('#div1').hide('fast');
+                            $('#div2').hide('fast');
+                            $('#div3').show('fast');
+                            $('input[name=PD_Distance]').val("");
+                            $('input[name=PD_HeartRate]').val("");
+                            $('input[name=PD_StrokeRate]').val("");
+                            $('input[name=PD_Repeat]').val("");
+                            $('input[name=PT_Time]').val("");
+                            $('input[name=PT_HeartRate]').val("");
+                            $('input[name=PT_StRate]').val("");
+                            $('input[name=PT_Repeat]').val("");
 
+                        });
 
-    </li>
-</ul>
+                    });
+                </script>
+                <div class="fitem">
+                    <label>ID:</label>
+                    <input name="_id" class="easyui-validatebox" required="true">
+                </div>
+                <div class="fitem">
+                    <input id="id_radio1" type="radio" name="name_radio1" value="SINGLE PIECE DISTANCE" checked="checked">SINGLE PIECE DISTANCE</input></br>
+                    <input id="id_radio2" type="radio" name="name_radio1" value="SINGLE PIECE TIME">SINGLE PIECE TIME </input></br>
+                    <input id="id_radio3" type="radio" name="name_radio1" value="INTERVAL SET">INTERVAL SET</input></br></br>
 
+                </div>
+                <div id="div1">
 
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;"> Distance: </td>
+                            <td align="left"><input type="text" name="PD_Distance" placeholder="Distance" required="true" />&nbsp;m.</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Target heart rate:</td>
+                            <td align="left"><input type="text" name="PD_HeartRate" placeholder="Target heart rate" required="true" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Target stroke rate:</td>
+                            <td align="left"><input type="text" name="PD_StrokeRate" placeholder="Target stroke rate" required="true" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Repeat:</td>
+                            <td align="left"><input type="number" name="PD_Repeat"  required="true" min="1" max="10" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
 
+                    </table>
 
-<table id="dg" title="Training Plan" class="easyui-datagrid" style="width:550px;height:250px"
-       url="/TrainingPlans"
-       toolbar="#toolbar"
-       method="get"
-       rownumbers="true" fitColumns="true" singleSelect="true">
-    <thead>
-    <tr>
-        <th field="name" width="50">Name</th>
-        <!--th field="duration" width="50">Duration</th>
-        <th field="date" width="50">Date</th>
-        <th field="time" width="50">Time</th-->
-        <th field="description" width="100">Description</th>
-    </tr>
-    </thead>
-</table>
-<div id="toolbar">
-    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick ="alert('newSession() ')">New Session</a>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="alert('editSession()')">Edit Session</a>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="alert('removeSession()')">Remove Session</a>
+                </div>
+                <div id="div2">
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;"> Time: </td>
+                            <td align="left" ><input type="text" name="PT_Time" placeholder="Time" required id="Time" />&nbsp;Sec.</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Target heart rate:</td>
+                            <td align="left"><input type="text" name="PT_HeartRate" placeholder="Target heart rate" required id="Target heart rate" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Target stroke rate:</td>
+                            <td align="left"><input type="text" name="PT_StRate" placeholder="Target stroke rate" required id="Target stroke rate" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Repeat:</td>
+                            <td align="left"><input type="number" name="PT_Repeat"  required="" id="Repeat" min="1" max="10" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div id="div3">
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;"> Interval: </td>
+                            <td align="left" width="63%"><input type="text" name="IS_Interval" placeholder="Interval" required id="Interval" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Type:</td>
+                            <td align="left" height="40px;"><input type="radio" name="IS_IT_Type" id="ISTime" value="Time">Time&nbsp;&nbsp;&nbsp;<input type="radio" name="IS_IT_Dis" id="ISDis" value="Dis">Dis&nbsp;&nbsp;&nbsp;<input type="radio" name="IS_IT_Stroke" id="ISStroke" value="Stroke">Stroke</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Rest:</td>
+                            <td align="left"><input type="text" placeholder="Rest" name="IS_Reset" required id="Target" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="left" style="padding-left:10px;">Type:</td>
+                            <td align="left"><input type="radio" name="IS_RT_Time" id="RTTime" value="Time">Time&nbsp;&nbsp;&nbsp;<input type="radio" name="IS_RT_Dis" id="Dis" value="Dis">Dis&nbsp;&nbsp;&nbsp;<input type="radio" name="IS_RT_Stroke" id="Stroke" value="Stroke">Stroke</td>
+                            <td>&nbsp;</td>
+                        </tr>
+
+                    </table>
+
+                </div>
+                      </form>
+                </div>
+                <div id="SessionDLG" class="easyui-dialog" style="width:800px;height:550px;padding:10px 20px"
+                     closed="true" buttons="#session-buttons">
+                    <form id="SessionFM" method="post" novalidate>
+                    <script type="text/javascript">
+
+                        $(document).ready(function () {
+                            $('#PieceCreate').click(function () {
+                                $('#PieceDLG').dialog('open').dialog('setTitle','Create Piece');
+                                $('#PieceFM').form('clear');
+                                $('#div1').show('fast');
+                                $('#div2').hide('fast');
+                                $('#div3').hide('fast');
+                                $('input[id=id_radio1]').prop('checked', true);
+
+                            });
+                            $('#PieceEdit').click(function () {
+
+                                var t = $('#TablePiece');
+
+                                var row = t.datagrid('getSelected');
+
+                                if (row){
+                                    $('#PieceDLG').dialog('open').dialog('setTitle','Edit Piece');
+                                    var myform =   $('#PieceFM').form;
+                                    myform.createMode = "0";
+
+                                    $('#PieceFM').form('load',row);
+                                    //url = '/TrainingPlan/:'+row._id;
+                                }
+                            });
+
+                            $('#SessionCreate').click(function () {
+                                var myData = {
+                                    PieceData : [
+                                        { name_radio1 : "Rec 0", S_Mode : "0", column2 : "0" },
+                                        { name_radio1 : "Rec 1", S_Mode : "1", column2 : "1" }
+                                    ]
+                                };
+                                $('#TablePiece').datagrid({
+                                    data: myData.PieceData,
+                                    toolbar:"#PieceTool",
+                                    rownumbers:"true",
+                                    fitColumns:"true",
+                                    singleSelect:"true"
+
+                                });
+                            });
+                            $('#SessionEdit').click(function () {
+                                var myData = {
+                                    PieceData : [
+                                        { name_radio1 : "Rec 0", S_Mode : "0", column2 : "0" },
+                                        { name_radio1 : "Rec 1", S_Mode : "1", column2 : "1" }
+                                    ]
+                                };
+                                $('#TablePiece').datagrid({
+                                    data: myData.PieceData,
+                                    toolbar:"#PieceTool",
+                                    rownumbers:"true",
+                                    fitColumns:"true",
+                                    singleSelect:"true"
+
+                                });
+                            });
+                        });
+                        </script>
+                        <div class="ftitle">Session Details</div>
+                        <table class="cssTable">
+                            <tr>
+                                <td>
+                                    <label>ID:</label>
+                                </td>
+                                <td>
+                                    <input name="_id" class="easyui-validatebox" required="true">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Date:</label>
+                                </td>
+                                <td>
+                                    <input type="date" id="startdate" name="S_Date">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Time:</label>
+                                </td>
+                                <td>
+                                    <input type="Time" id="startTime" name="S_Time">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Total Duration:</label>
+                                </td>
+                                <td>
+                                    <input name="S_TotalDuration" class="easyui-validatebox" required="true">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Mode:</label>
+                                </td>
+                                <td>
+                                    <select id = "Mode" name="S_Mode">
+                                        <option value = "Select">----Select---------</option>
+                                        <option value = "Sculling">Sculling</option>
+                                        <option value = "Sweep Rowing">Sweep Rowing</option>
+                                        <option value = "Cycling">Cycling</option>
+                                        <option value = "Weight">Weight</option>
+                                        <option value = "Body Circuit">Body Circuit</option>
+                                        <option value = "Ergometer">Ergometer</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="cssTable">
+                            <tr>
+                                <td align="left" width="25%px;" style="margin-left:20px">Training Zone</td>
+
+                                <td align="left" width="69%px;"> <input type="radio" name="S_TrainingZone" value="4T2 - Aerobic Endurance"> 4T2 - Aerobic Endurance</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td align="left"> <input type="radio" name="S_TrainingZone" value="4T1 - Intense Aerobic"> 4T1 - Intense Aerobic</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td align="left"> <input type="radio" name="S_TrainingZone" value="AT - Threshold"> AT - Threshold</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td align="left"> <input type="radio" name="S_TrainingZone" value="TR - Transport"> TR - Transport</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td align="left"> <input type="radio" name="S_TrainingZone" value="AN - Max"> AN - Max</td>
+                            </tr>
+                            <tr><td>&nbsp;</td></tr>
+                        </table>
+                    </form>
+                    <div id="session_buttons">
+                        <a id="savesession" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">Save</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#SessionDLG').dialog('close')">Cancel</a>
+                    </div>
+                    <br><br>
+                    <div id="PieceTool">
+                        <a href="#" id="PieceCreate" class="easyui-linkbutton" iconCls="icon-add" plain="true">Create Piece</a>
+                        <a href="#" id="PieceEdit" class="easyui-linkbutton" iconCls="icon-edit" plain="true">Edit Piece</a>
+                        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">Remove Piece</a>
+                    </div>
+                    <table id="TablePiece" title="Pieces" class="cssTpsTable">
+                        <thead>
+                        <tr>
+                            <th field="_id" width="70">ID</th>
+                            <th field="name_radio1" width="50">Piece Option</th>
+                        </tr>
+                        </thead>
+                    </table>
+
+                </div>
+
+                <div id="TrainingPlanDLG" class="easyui-dialog" style="width:800px;height:550px;padding:10px 20px"
+                     closed="true">
+                    <div class="ftitle">Training Plan Details</div>
+                    <form id="TrainingPlanFM" method="post" novalidate>
+                        <script type="text/javascript">
+
+                            $(document).ready(function () {
+
+                                $('#savesession').click(function () {
+
+                                    //var test=" {SessionData : [{ S_Date : '"+$('input[name=S_Date]').val()+"', S_Time : '"+$('input[name=S_Time]').val()+"', S_TotalDuration : '"+ $('input[name=S_TotalDuration]').val()+"', S_Mode : '"+ $('#Mode').val()+"', S_TrainingZone : '"+ $('input[name=S_TrainingZone]').val()+"' }]};";
+                                    //var test={ S_Date : '2013-05-17', S_Time : '01:01', S_TotalDuration : 'dsvsd', S_Mode : 'Cycling', S_TrainingZone : '4T2 - Aerobic Endurance' };
+
+                                   $('#sessionadd').text(test);
+
+                                    var txt1 = $('#sessionadd').text();
+                                    //alert(txt1);
+                                    //$('#TableSession').datagrid('reload');
+                                });
+
+                                $('#SessionCreate').click(function () {
+                                    $('#SessionDLG').dialog('open').dialog('setTitle','Create Session');
+                                    $('#SessionFM').form('clear');
+                                });
+                                $('#SessionEdit').click(function () {
+                                    var t = $('#TableSession');
+
+                                    var row = t.datagrid('getSelected');
+
+                                    if (row){
+                                        $('#SessionDLG').dialog('open').dialog('setTitle','Edit Session');
+                                        var myform =   $('#SessionFM').form;
+                                        myform.createMode = "0";
+
+                                        $('#SessionFM').form('load',row);
+                                        //url = '/TrainingPlan/:'+row._id;
+                                    }
+                                });
+                                $('#TrainingEdit').click(function () {
+                                    var myData = {
+                                        SessionData : [
+                                            { S_TotalDuration : "Rec 0", S_Mode : "0", column2 : "0" },
+                                            { S_TotalDuration : "Rec 1", S_Mode : "1", column2 : "1" }
+                                        ]
+                                    };
+                                    $('#TableSession').datagrid({
+                                        data: myData.SessionData,
+                                        toolbar:"#SessionTool",
+                                        rownumbers:"true",
+                                        fitColumns:"true",
+                                        singleSelect:"true"
+
+                                    });
+                                });
+                                $('#TrainingCreate').click(function () {
+
+                                    var myData = {
+                                        SessionData : [
+                                            { S_TotalDuration : "Rec 0", S_Mode : "0", column2 : "0" },
+                                            { S_TotalDuration : "Rec 1", S_Mode : "1", column2 : "1" }
+                                        ]
+                                    };
+                                    $('#TableSession').datagrid({
+                                        data: myData.SessionData,
+                                        toolbar:"#SessionTool",
+                                        rownumbers:"true",
+                                        fitColumns:"true",
+                                        singleSelect:"true"
+
+                                    });
+                                });
+                            });
+                        </script>
+                        <div id="animDummy1">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                                 <div id="sessionadd"></div>
+                        <table class="cssTable">
+                            <tr>
+                                <td>
+                                    <label>Name:</label>
+                                </td>
+                                <td>
+                                    <input name="TP_Name" class="easyui-validatebox" required="true">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>ID:</label>
+                                </td>
+                                <td>
+                                    <input name="_id" class="easyui-validatebox" required="true">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Description:</label>
+                                </td>
+                                <td>
+                                    <textarea  name="TP_Description" rows="3" cols="38" class="cssTextArea">
+                                    </textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="cssValignTop">
+                                    <label>Assign Users:</label>
+                                </td>
+                                <td>
+                                    <select name="TP_AssignUsers" size="3" multiple style="width:80%">
+                                        <option name="one" value="one"> one </option>
+                                        <option name="two" value="two"> two </option>
+                                        <option name="three" value="three"> three </option>
+                                        <option name="four" value="four"> four </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="cssValignTop">
+                                    <label>Assign Groups:</label>
+                                </td>
+                                <td>
+                                    <select name="TP_AssignGroups" size="3" multiple style="width:80%;">
+                                        <option name="one" value="one"> one </option>
+                                        <option name="two" value="two"> two </option>
+                                        <option name="three" value="three"> three </option>
+                                        <option name="four" value="four"> four </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="cssValignTop">
+
+                                </td>
+                                <td>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="save_trainingplan()">Save</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#TrainingPlanDLG').dialog('close')">Cancel</a>
+                                </td>
+                            </tr>
+                        </table>
+                        <div id="SessionTool">
+                            <a  href="#" id="SessionCreate" class="easyui-linkbutton" iconCls="icon-add" plain="true">Create Session</a>
+                            <a href="#" id="SessionEdit"class="easyui-linkbutton" iconCls="icon-edit" plain="true">Edit Session</a>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">Remove Session</a>
+                        </div>
+                        <table id="TableSession" title="Session" class="cssTpsTable">
+                            <thead>
+                            <tr>
+                                <th field="S_TotalDuration" width="100">Total Duration</th>
+                                <th field="S_Mode" width="100">Mode</th>
+                                <th field="S_TrainingZone" width="100">Training Zone</th>
+                            </tr>
+                            </thead>
+                        </table>
+
+                    </form>
+
+                </div>
+
+            </div>
+            <div class="tabpage" id="tabpage_2">
+            </div>
+            <div class="tabpage" id="tabpage_3">
+                <h2>Reports</h2>
+                <p>Coming soon...</p>
+            </div>
+            <div class="tabpage" id="tabpage_4">
+
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+
+    $('#TrainingTable').datagrid({
+        url:'/TrainingScript',
+        toolbar:"#TrainingTool",
+        method:"get",
+        rownumbers:"true",
+        fitColumns:"true",
+        singleSelect:"true"
+    });
+
+    function save_trainingplan(){
+        $.messager.progress();	// display the progress bar
+
+        var myform =   $('#TrainingPlanFM').form;
+        var urlStr='/TrainingScript';
+        var methodStr='post';
+
+        if(myform.createMode == "0")       // Are we Editing a record ?   If so set the URL and method appropriately
+        {
+            urlStr='/TrainingScriptEdit';
+            methodStr='post';
+
+        }
+
+        $('#TrainingPlanFM').form('submit',{
+            url: urlStr,
+            method: methodStr,
+            onSubmit: function(){
+                var isValid = $(this).form('validate');
+                if (!isValid){
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+
+            },
+            success: function(result){
+                var result = eval('('+result+')');
+                $.messager.progress('close');	// hide progress bar while the form is invalid
+
+                if (result.errorMsg){
+                    $.messager.show({
+                        title: 'Error',
+                        msg: result.errorMsg
+                    });
+                } else {
+                    $('#TrainingPlanDLG').dialog('close');      // close the dialog
+                    $('#TrainingTable').datagrid('reload');    // reload the user data
+                }
+            }
+        });
+    }
 
 
+    function create_trainingplanDlgForNew() {
 
+        var t = $('#TrainingTable');
 
+        $('#TrainingPlanDLG').dialog('open').dialog('setTitle','Create Training Plan');
+        $('#TrainingPlanFM').form('clear');
+        var myform =   $('#TrainingPlanFM').form;
+        myform.createMode = "1";
 
+    }
 
+    function create_trainingplanDlgForEdit() {
 
+        var t = $('#TrainingTable');
 
+        var row = t.datagrid('getSelected');
 
+        if (row){
+            $('#TrainingPlanDLG').dialog('open').dialog('setTitle','Edit Training Plan');
+            var myform =   $('#TrainingPlanFM').form;
+            myform.createMode = "0";
 
+            $('#TrainingPlanFM').form('load',row);
+            //url = '/TrainingPlan/:'+row._id;
+        }
+    }
 
+    function delete_trainingplan() {
 
+        var t = $('#TrainingTable');
 
-
-
-
-
-
-
+        var row = t.datagrid('getSelected');
+        if (row) {
+            $.messager.confirm('Confirm','Are you sure you want to delete this record?',function(r){
+                if (r){
+                    var url = "/TrainingScriptDelete/"+row._id;
+                    $.ajax({
+                        url: url,
+                        type: "delete",
+                        data: "",
+                        success: function() { alert("Record has been successfully deleted.");
+                            $('#TrainingTable').datagrid('reload');
+                        },
+                        error: (function() { alert("Some technical problem."); })
+                    });
+                }
+            });
+        }
+        else{
+            alert('Problem fetching rowName');
+        }
+    }
+</script>
 </body>
 </html>
