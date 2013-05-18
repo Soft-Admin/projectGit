@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="jquery,ui,easy,easyui,web">
+    <meta name="description" content="easyui help you build your web page easily!">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
+    <!--link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css"-->
+
+    <!-- Libraries -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+
+
+    <!--script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script-->
+    <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+
+
+    <title>MyCoach Session</title>
+</head>
+<body>
+
+<!-- HTML CODE -->
+<div id="container">Session</div>
+
+
+<table id="tpstable" title="Session" style="width:950px;height:250px">
+    <thead>
+    <tr>
+
+        <th field="_id" width="70">ID</th>
+        <th field="S_TotalDuration" width="100">Total Duration</th>
+        <th field="S_Mode" width="100">Mode</th>
+        <th field="S_TrainingZone" width="100">Training Zone</th>
+
+    </tr>
+    </thead>
+</table>
+<div id="toolbar">
+    <a href="#" id="sessioninsert" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="create_SessionDlgForNew()">Create Session</a>
+    <a href="#" id="sessionupdate" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="create_SessionDlgForEdit()">Edit Session</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="delete_Session()">Remove Session</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="piece_SessionPlan()">Piece</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="back_Form()">Back</a>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:450px;height:350px;padding:10px 20px"
+     closed="true" buttons="#dlg-buttons">
+    <div class="ftitle">Session Details</div>
+    <form id="fm" method="post" novalidate>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#sessioninsert').click(function () {
+                    $.urlParam = function(name){
+                        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                        return results[1] || 0;
+                    }
+                    $('[id$=SessionURL]').val($.urlParam('ID'));
+
+                });
+                $('#sessionupdate').click(function () {
+                    $.urlParam = function(name){
+                        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                        return results[1] || 0;
+                    }
+                    $('[id$=SessionURL]').val($.urlParam('ID'));
+
+                });
+            });
+        </script>
+        <input type="hidden" name="TrainingID" id="SessionURL">
+        <input type="hidden" name="createMode">
+        <div class="fitem">
+            <label>ID:</label>
+            <input name="_id" class="easyui-validatebox" required="true">
+        </div>
+        <div class="fitem">
+            <label>Date:</label>
+            <input type="date" id="startdate" name="S_Date">
+        </div>
+        <div class="fitem">
+            <label>Time:</label>
+            <input type="Time" id="startTime" name="S_Time">
+        </div>
+        <div class="fitem">
+            <label>Total Duration:</label>
+            <input name="S_TotalDuration" class="easyui-validatebox" required="true">
+        </div>
+        <div class="fitem">
+            <label>Mode:</label>
+            <select id = "Mode" name="S_Mode">
+                <option value = "Select">----Select---------</option>
+                <option value = "Sculling">Sculling</option>
+                <option value = "Sweep Rowing">Sweep Rowing</option>
+                <option value = "Cycling">Cycling</option>
+                <option value = "Weight">Weight</option>
+                <option value = "Body Circuit">Body Circuit</option>
+                <option value = "Ergometer">Ergometer</option>
+            </select>
+        </div>
+        <div class="fitem">
+            <table width="100%" border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td align="left" width="25%px;" style="margin-left:20px">Training Zone</td>
+
+                    <td align="left" width="69%px;"> <input type="radio" name="S_TrainingZone" value="4T2 - Aerobic Endurance"> 4T2 - Aerobic Endurance</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td align="left"> <input type="radio" name="S_TrainingZone" value="4T1 - Intense Aerobic"> 4T1 - Intense Aerobic</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td align="left"> <input type="radio" name="S_TrainingZone" value="AT - Threshold"> AT - Threshold</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td align="left"> <input type="radio" name="S_TrainingZone" value="TR - Transport"> TR - Transport</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td align="left"> <input type="radio" name="S_TrainingZone" value="AN - Max"> AN - Max</td>
+                </tr>
+                <tr><td>&nbsp;</td></tr>
+            </table>
+            </div>
+    </form>
+</div>
+
+
+<div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="save_Session()">Save</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+</div>
+
+
+
+
+<script>
+
+    $.urlParam = function(name){
+        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        return results[1] || 0;
+    }
+
+    $('#tpstable').datagrid({
+        url:'/SessionScript/'+$.urlParam('ID'),
+        toolbar:"#toolbar",
+        method:"get",
+        rownumbers:"true",
+        fitColumns:"true",
+        singleSelect:"true"
+    });
+
+    function save_Session(){
+        $.messager.progress();	// display the progress bar
+
+        var myform =   $('#fm').form;
+        var urlStr='/SessionScript';
+        var methodStr='post';
+
+        if(myform.createMode == "0")       // Are we Editing a record ?   If so set the URL and method appropriately
+        {
+            urlStr='/SessionScriptEdit';
+            methodStr='post';
+
+        }
+
+
+
+        $('#fm').form('submit',{
+            url: urlStr,
+            method: methodStr,
+            onSubmit: function(){
+                var isValid = $(this).form('validate');
+                if (!isValid){
+                    $.messager.progress('close');	// hide progress bar while the form is invalid
+                }
+                return isValid;	// return false will stop the form submission
+
+            },
+            success: function(result){
+                var result = eval('('+result+')');
+                $.messager.progress('close');	// hide progress bar while the form is invalid
+
+                if (result.errorMsg){
+                    $.messager.show({
+                        title: 'Error',
+                        msg: result.errorMsg
+                    });
+                } else {
+                    $('#dlg').dialog('close');      // close the dialog
+                    $('#tpstable').datagrid('reload');    // reload the user data
+                }
+            }
+        });
+    }
+
+    function back_Form() {
+        window.location.href = "/Training Plan.html";
+    }
+
+    function create_SessionDlgForNew() {
+
+        var t = $('#tpstable');
+
+        $('#dlg').dialog('open').dialog('setTitle','Create Session');
+        $('#fm').form('clear');
+        var myform =   $('#fm').form;
+        myform.createMode = "1";
+
+    }
+
+    function create_SessionDlgForEdit() {
+
+        var t = $('#tpstable');
+
+        var row = t.datagrid('getSelected');
+
+        if (row){
+            $('#dlg').dialog('open').dialog('setTitle','Edit Session');
+            var myform =   $('#fm').form;
+            myform.createMode = "0";
+
+            $('#fm').form('load',row);
+            //url = '/TrainingPlan/:'+row._id;
+        }
+    }
+
+    function delete_Session() {
+
+        var t = $('#tpstable');
+
+        var row = t.datagrid('getSelected');
+        if (row) {
+            alert('ID:' + row._id );
+            var url = "/SessionScriptDelete/"+row._id;
+            $.ajax({
+                url: url,
+                type: "delete",
+                data: "",
+                success: function() { alert("Record has been successfully deleted.");
+                    $('#tpstable').datagrid('reload');
+                },
+                error: (function() { alert("Some technical problem."); })
+            });
+        }
+        else{
+            alert('Problem fetching rowName');
+        }
+    }
+
+    function piece_SessionPlan() {
+
+        var t = $('#tpstable');
+
+        var row = t.datagrid('getSelected');
+        if (row) {
+            window.location.href = "/Piece.html?TranID="+$.urlParam('ID')+"&ID="+row._id;
+        }
+        else{
+            alert('Problem fetching rowName');
+        }
+    }
+
+
+</script>
+
+
+</body>
+</html>
